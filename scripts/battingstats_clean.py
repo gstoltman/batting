@@ -17,10 +17,10 @@ battingstats_df['NORMALIZED_NAME'] = battingstats_df['last_name, first_name'].ap
 
 # Split 'last_name, first_name' column in battingstats
 battingstats_df[['last_name', 'first_name']] = battingstats_df['NORMALIZED_NAME'].str.split(', ', expand=True)
+print(battingstats_df.head())
 
 # Merge to new DF and drop unnecessary columns
-merged_df = pd.merge(battingstats_df, rosters_df, left_on=['last_name', 'first_name', 'year'], right_on=['LAST', 'FIRST', 'YEAR'], how='left')
-merged_df = merged_df.rename(columns={'last_name, first_name': 'FULL_NAME'})
+merged_df = pd.merge(battingstats_df, rosters_df, left_on=['last_name', 'first_name', 'year'], right_on=['LAST', 'FIRST', 'YEAR'], how='inner')
 merged_df = merged_df.drop(columns=['last_name', 'first_name', 'LAST', 'FIRST', 'YEAR'])
 
 # Reorder columns to place PLAYERID at the start

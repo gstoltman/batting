@@ -37,12 +37,12 @@ for filename in os.listdir(directory):
 roster_pattern = re.compile(r'.*\.ROS$')
 
 # Clean up and delete redundant roster files
-for filename in os.listdir(directory):
-    # Check if the filename does not match the pattern
-    if roster_pattern.match(filename):
-        # Construct the full file path
-        file_path = os.path.join(directory, filename)
-        # Delete the file
-        os.remove(file_path)
-        print(f'Deleted: {filename}')
+# for filename in os.listdir(directory):
+#     # Check if the filename does not match the pattern
+#     if roster_pattern.match(filename):
+#         # Construct the full file path
+#         file_path = os.path.join(directory, filename)
+#         # Delete the file
+#         os.remove(file_path)
+#         print(f'Deleted: {filename}')
 
