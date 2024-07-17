@@ -1,68 +1,60 @@
 from dash import Dash, html, dash_table, dcc, callback, Output, Input
 import copy
 import plotly.express as px
+import plotly.graph_objs as go
+from plotly.subplots import make_subplots
 import pandas as pd
 
-df = pd.read_csv('./data/battingfacts.csv')
+df = pd.read_csv('/home/grant/projects/batting/data/rosters.csv')
 
 app = Dash()
 
-app.layout = [
-    html.H1(children='Batting Averages', style={'textAlign':'center'}),
-    dcc.Dropdown(id='team', options=df.TEAM_CODE.unique()),
-    dcc.Dropdown(id='player', options=df.NORMALIZED_NAME.unique()),
-    dcc.Graph(id='line'),
-    dash_table.DataTable(id='table', data=df.to_dict('records'), page_size=10)
-]
+# Define the layout
+app.layout = html.Div([
+    dcc.Dropdown(
+        id='player-dropdown',
+        options=[{'label': name, 'value': name} for name in df['Name'].unique()],
+        value=df['Name'].unique()[0]  # Default value
+    ),
+    dcc.Graph(id='line-chart')
+])
 
-@callback(
-    Output('player', 'options'),
-    Input('team', 'value')
+# Define the callback to update the graph
+@app.callback(
+    Output('line-chart', 'figure'),
+    Input('player-dropdown', 'value')
 )
+def update_graph(selected_player):
+    # Filter data for the selected player
+    filtered_df = df[df['Name'] == selected_player]
 
-def chained_callback_player(team):
-    dff = copy.deepcopy(df)
-    if team is not None:
-        dff = dff.query('TEAM_CODE == @team')
-    return sorted(dff['NORMALIZED_NAME'].unique())
-
-@callback(
-    Output('team', 'options'),
-    Input('player', 'value')
-)
-
-def chained_callback_team(player):
-    dff = copy.deepcopy(df)
-    if player is not None:
-        dff = dff.query('NORMALIZED_NAME == @player')
-    return dff['TEAM_CODE'].unique()
-
-@callback(
-    Output("table", "table"),
-    Input("player", "value"),
-    Input("team", "value"),
-)
-
-@callback(
-    Output("line", "figure"),
-    Input("player", "value"),
-    Input("team", "value"),
-)
-
-def line_chart(player, team):
-    dff = copy.deepcopy(df)
-    if player is not None:
-        dff = dff.query('NORMALIZED_NAME == @player')
-    if team is not None:
-        dff = dff.query('TEAM_CODE == @team')
+    # Define different color segments
+    colors = ['blue', 'green', 'red', 'purple']
     
-    fig = px.line(dff, x='year', y='batting_avg')
+    # Create the figure
+    fig = go.Figure()
 
-    fig.update_xaxes(range=[2015, 2023])
-    fig.update_yaxes(range=[0, .400])
+    # Add segments one by one based on teams
+    for i, team in enumerate(filtered_df['team'].unique()):
+        team_df = filtered_df[filtered_df['team'] == team].sort_values(by='year')
+        fig.add_trace(go.Scatter(
+            x=team_df['year'],
+            y=team_df['AVG'],
+            mode='lines+markers',
+            line=dict(color=colors[i % len(colors)], width=2),
+            name=f'{team}'
+        ))
+
+    # Update layout
+    fig.update_layout(
+        title=f'Batting Average (AVG) Over Years for {selected_player}',
+        xaxis_title='Year',
+        yaxis_title='Batting Average',
+        xaxis=dict(tickmode='linear'),
+        showlegend=True
+    )
 
     return fig
 
 if __name__ == '__main__':
     app.run(port=8051, debug=True)
-
