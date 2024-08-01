@@ -47,6 +47,8 @@ def update_graph(selected_player):
 
     # Update layout
     fig.update_layout(
+        paper_bgcolor='darkgrey',
+        plot_bgcolor='darkgrey',
         title=f'Batting Average (AVG) Over Years for {selected_player}',
         xaxis_title='Year',
         yaxis_title='Batting Average',
