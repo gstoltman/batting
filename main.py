@@ -30,6 +30,10 @@ def update_graph(selected_player):
 
     # Define different color segments
     colors = ['blue', 'green', 'red', 'purple']
+    color_map = {
+        'CHN': 'blue', 'BOS': 'red', 'CHA': 'black', 'SLN': 'red', 'CN5': 'red', 'ANG': 'grey', 'MIA': 'orange', 'TEX': 'red', 'PIT': 'yellow', 'LAN': 'blue', 'SDN': 'yellow', 'WS0': 'red', 'ARI': 'maroon', 'TOR': 'blue', 'TBR': 'darkblue', 'SEA': 'darkblue', 'BAL': 'orange', 'ATL': 'red', 'HOA': 'orange', 'KCA': 'blue', 'PHI': 'red', 'CLE': 'red', 'MIN': 'red', 'NYN': 'orange', 'ML4': 'darkblue', 'OAK': 'green', 'COL': 'purple', 'DET': 'orange', 'NYA': 'black', 'SFN': 'orange', 'CLG': 'red'
+    }
+
     
     # Create the figure
     fig = go.Figure()
@@ -37,11 +41,13 @@ def update_graph(selected_player):
     # Add segments one by one based on teams
     for i, team in enumerate(filtered_df['team'].unique()):
         team_df = filtered_df[filtered_df['team'] == team].sort_values(by='year')
+        color = color_map.get(team)
         fig.add_trace(go.Scatter(
             x=team_df['year'],
             y=team_df['AVG'],
             mode='lines+markers',
-            line=dict(color=colors[i % len(colors)], width=2),
+            line=dict(color=color, width=7),
+            marker=dict(size=20),
             name=f'{team}'
         ))
 
@@ -52,7 +58,8 @@ def update_graph(selected_player):
         title=f'Batting Average (AVG) Over Years for {selected_player}',
         xaxis_title='Year',
         yaxis_title='Batting Average',
-        xaxis=dict(tickmode='linear'),
+        xaxis=dict(range=[2014, 2024], tickmode='linear'),
+        yaxis=dict(range=[.15, .35], tickformat='.3f'),
         showlegend=True
     )
 
