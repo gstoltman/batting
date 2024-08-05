@@ -1,11 +1,27 @@
 from dash import Dash, html, dash_table, dcc, callback, Output, Input
 import copy
+from google.cloud import storage
+from io import StringIO
 import plotly.express as px
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 import pandas as pd
 
-df = pd.read_csv('/home/grant/projects/batting/data/rosters.csv')
+if 'GOOGLE_APPLICATION_CREDENTIALS' not in os.environ:
+    raise EnvironmentError('GOOGLE_APPLICATION_CRE2DENTIALS environment variable not set.')
+
+client = storage.Client()
+
+bucket_name = 'rosters-bucket'
+blob_name = 'https://storage.cloud.google.com/rosters-bucket/rosters.csv'
+
+bucket = client.bucket(bucket_name)
+
+blob = bucket.blob(blob_name)
+
+csv_string = blob.download_as_text()
+
+df = pd.read_csv(StringIO(csv_string))
 
 app = Dash()
 
@@ -18,11 +34,14 @@ for i in stat_list:
 
 # Define the layout
 app.layout = html.Div([
+    html.Label('Select Player:', style={'color': 'white'}),
     dcc.Dropdown(
         id='player-dropdown',
         options=[{'label': name, 'value': name} for name in df['Name'].unique()],
-        value=df['Name'].unique()[0]  # Default value
+        value=df['Name'].unique()[0], # Default value
+        style={'margin-bottom': '20px'}
     ),
+    html.Label('Select Stat:', style={'color': 'white'}),
     dcc.Dropdown(
         id='stat-dropdown',
         options=[{'label': stat, 'value': stat} for stat in stat_list],
@@ -50,7 +69,7 @@ def update_graph(selected_player, selected_stat):
         'CHA': '#27251F',
         'SLN': '#C41E3A ',
         'CN5': '#C6011F',
-        'ANG': 'grey',
+        'ANG': '#BA0021',
         'MIA': '#00A3E0',
         'TEX': '#003278',
         'PIT': '#FDB827',
@@ -60,7 +79,7 @@ def update_graph(selected_player, selected_stat):
         'ARI': '#A71930',
         'TOR': '#134A8E',
         'TBR': '#092C5C',
-        'SEA': '#0C2C56',
+        'SEA': '#005C5C',
         'BAL': '#DF4601',
         'ATL': '#CE1141',
         'HOA': '#EB6E1F',

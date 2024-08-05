@@ -6,6 +6,7 @@ in pkgs.mkShell {
     (pkgs.python3.withPackages (python-pkgs: [
       python-pkgs.beautifulsoup4
       python-pkgs.dash
+      python-pkgs.google-cloud-storage
       python-pkgs.matplotlib
       python-pkgs.notebook
       python-pkgs.numpy
@@ -13,4 +14,6 @@ in pkgs.mkShell {
       python-pkgs.requests
     ]))
   ];
+
+  GOOGLE_APPLICATION_CREDENTIALS = "/home/grant/projects/batting/secrets/batting-a57cfa164993.json";
 }
