@@ -7,21 +7,25 @@ import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 import pandas as pd
 
-if 'GOOGLE_APPLICATION_CREDENTIALS' not in os.environ:
-    raise EnvironmentError('GOOGLE_APPLICATION_CRE2DENTIALS environment variable not set.')
+#if 'GOOGLE_APPLICATION_CREDENTIALS' not in os.environ:
+#    raise EnvironmentError('GOOGLE_APPLICATION_CREDENTIALS environment variable not set.')
 
-client = storage.Client()
+# client = storage.Client()
+# 
+# bucket_name = 'rosters-bucket'
+# blob_name = 'https://storage.cloud.google.com/rosters-bucket/rosters.csv'
+# 
+# bucket = client.bucket(bucket_name)
+# 
+# blob = bucket.blob(blob_name)
+# 
+# csv_string = blob.download_as_text()
+# 
+# df = pd.read_csv(StringIO(csv_string))
 
-bucket_name = 'rosters-bucket'
-blob_name = 'https://storage.cloud.google.com/rosters-bucket/rosters.csv'
+df_path = '~/projects/batting/data/rosters.csv'
 
-bucket = client.bucket(bucket_name)
-
-blob = bucket.blob(blob_name)
-
-csv_string = blob.download_as_text()
-
-df = pd.read_csv(StringIO(csv_string))
+df = pd.read_csv(df_path)
 
 app = Dash()
 
